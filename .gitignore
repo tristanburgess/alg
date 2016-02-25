@@ -1,3 +1,7 @@
+# Exclude all build folders/files except build.bat
+build/*
+!build/build.bat
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
