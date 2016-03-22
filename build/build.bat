@@ -1,7 +1,7 @@
 @echo off
 
-set CommonCompilerFlags=-O2 -EHa
-set file=different_summands
+set CommonCompilerFlags=-O2 -EHa -Zi
+set file=merge_sorting
 
 IF NOT EXIST %file% mkdir %file%
 pushd %file%
