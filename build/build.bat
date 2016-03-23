@@ -1,7 +1,7 @@
 @echo off
 
 set CommonCompilerFlags=-O2 -EHa -Zi
-set file=merge_sorting
+set file=knapsack
 
 IF NOT EXIST %file% mkdir %file%
 pushd %file%

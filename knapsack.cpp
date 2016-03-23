@@ -3,15 +3,26 @@
 
 using std::vector;
 
-int optimal_weight(int W, const vector<int> &w) {
-  //write your code here
-  int current_weight = 0;
-  for (size_t i = 0; i < w.size(); ++i) {
-    if (current_weight + w[i] <= W) {
-      current_weight += w[i];
+int optimal_weight(int W, const vector<int> &items) {
+  int N = items.size();
+  vector< vector<int> > value(W+1, vector<int>(N+1));
+
+  for (size_t i = 0; i < items.size(); ++i) {
+    for (int j = 1; j <= W; ++j) {
+      value[j][i+1] = value[j][i];
+
+      if (items.at(i) <= j) {
+        int val = value[j - items.at(i)][i] + items.at(i);
+        //std::cout << "TEST BEFORE: " << " " << i << " " << j << " " << val << " " << value[j][i+1] << "\n";
+        if (value[j][i+1] < val) {
+          value[j][i+1] = val;
+        }
+        //std::cout << "TEST AFTER: " << " " << i << " " << j << " " << val << " " << value[j][i+1] << "\n";
+      }
     }
   }
-  return current_weight;
+
+  return value[W-1][N-1];
 }
 
 int main() {
