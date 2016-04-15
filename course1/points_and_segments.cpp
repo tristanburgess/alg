@@ -14,7 +14,6 @@ vector<int> fast_count_segments(vector<int> starts, vector<int> ends, vector<int
   vector<int> cnt(points.size());
 
   vector<pair<int, char>> ps_pairs;
-  vector<pair<int, int>> tmp;
 
   for (auto i = starts.begin(); i != starts.end(); ++i) {
     ps_pairs.emplace_back(*i, 'l');
