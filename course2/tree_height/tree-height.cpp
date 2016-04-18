@@ -1,4 +1,4 @@
-#pragma comment(linker, "/STACK:5000000")
+#pragma comment(linker, "/STACK:50000000")
 
 #include <iostream>
 #include <vector>
@@ -20,50 +20,38 @@ public:
       cin >> parent[i];
   }
 
-   // This function fills depth of i'th element in parent[].  The depth is
-    // filled in depth[i].
-    void fillDepth(int i)
+    void depth_at_node(int i)
     {
-        if (depth[i] > 0)
-            return;
-     
-        // If node at index i is root
-        if (parent[i] == -1 || parent[i] == i)
-        {
-            depth[i] = 1;
+        // Avoid depth recomputation
+        if (depth[i] > 0) {
             return;
         }
      
-        // If depth of parent is not evaluated before, then evaluate
-        // depth of parent first
-        if (depth[parent[i]] == 0)
-            fillDepth(parent[i]);
+        // Recurse until we get the depth of the branch up
+        // to the current node
+        if (depth[parent[i]] == 0) {
+            depth_at_node(parent[i]);
+        }
      
-        // Depth of this node is depth of parent plus 1
+        // Add on the depth at the level of the current node
         depth[i] = depth[parent[i]] + 1;
     }
  
-    // This function returns height of binary tree represented by
-    // parent array
     int compute_height()
     {
-        // Create an array to store depth of all nodes/ and
-        // initialize depth of every node as 0 (an invalid
-        // value). Depth of root is 1
-        for (int i = 0; i < n; i++)
-            depth[i] = 0;
+        for (int i = 0; i < n; i++) {
+            if (parent[i] == -1 || parent[i] == i) {
+                depth[i] = 1;
+            } else {
+                depth[i] = 0;
+            }
+        }
      
-        // fill depth of all nodes
-        for (int i = 0; i < n; i++)
-            fillDepth(i);
+        for (int i = 0; i < n; i++) {
+            depth_at_node(i);
+        }
      
-        // The height of binary tree is maximum of all depths.
-        // Find the maximum value in depth[] and assign it to ht.
-        int ht = depth[0];
-        for (int i=1; i<n; i++)
-            if (ht < depth[i])
-                ht = depth[i];
-        return ht;
+       return *max_element(depth.begin(), depth.end());
     }
 };
 

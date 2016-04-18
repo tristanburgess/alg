@@ -1,8 +1,8 @@
 @echo off
 
 set CommonCompilerFlags=-O2 -EHa -Zi
-set dir=tree_height
-set file=tree-height
+set dir=network_packet_processing_simulation
+set file=process_packages
 
 IF NOT EXIST %file% mkdir %file%
 pushd %file%
