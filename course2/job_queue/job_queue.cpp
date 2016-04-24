@@ -1,10 +1,14 @@
-#include <iostream>
 #include <vector>
 #include <algorithm>
+#include <queue>
+#include <iostream>
 
 using std::vector;
 using std::cin;
 using std::cout;
+using std::pair;
+using std::make_pair;
+using std::priority_queue;
 
 class JobQueue {
  private:
@@ -13,6 +17,17 @@ class JobQueue {
 
   vector<int> assigned_workers_;
   vector<long long> start_times_;
+  
+  struct orderProcessingPQ {  
+    bool operator()(const pair<int, long long> &l, const pair<int, long long> &r)  {  
+        if (l.second == r.second)
+            return l.first > r.first;
+        else
+            return l.second > r.second;  
+    }  
+  }; 
+  priority_queue<pair<int, long long>, vector<pair<int, long long > >, orderProcessingPQ > pq;
+  
 
   void WriteResponse() const {
     for (int i = 0; i < jobs_.size(); ++i) {
@@ -24,25 +39,24 @@ class JobQueue {
     int m;
     cin >> num_workers_ >> m;
     jobs_.resize(m);
-    for(int i = 0; i < m; ++i)
+    for (int i = 0; i < m; ++i) {
       cin >> jobs_[i];
+    }
+    for (int i = 0; i < num_workers_; ++i) {
+        pq.push(make_pair(i, 0));
+    }
   }
 
   void AssignJobs() {
-    // TODO: replace this code with a faster algorithm.
     assigned_workers_.resize(jobs_.size());
     start_times_.resize(jobs_.size());
-    vector<long long> next_free_time(num_workers_, 0);
+    
     for (int i = 0; i < jobs_.size(); ++i) {
       int duration = jobs_[i];
-      int next_worker = 0;
-      for (int j = 0; j < num_workers_; ++j) {
-        if (next_free_time[j] < next_free_time[next_worker])
-          next_worker = j;
-      }
-      assigned_workers_[i] = next_worker;
-      start_times_[i] = next_free_time[next_worker];
-      next_free_time[next_worker] += duration;
+      assigned_workers_[i] = pq.top().first;
+      start_times_[i] = pq.top().second;
+      pq.pop();
+      pq.push(make_pair(assigned_workers_[i], start_times_[i] + duration)); 
     }
   }
 

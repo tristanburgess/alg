@@ -28,23 +28,33 @@ class HeapBuilder {
     for(int i = 0; i < n; ++i)
       cin >> data_[i];
   }
+  
+  void SiftDown(int i) {
+    int swapI = i;
+    int childL = i*2+1;
+    int childR = i*2+2;
+    
+    if (childL < data_.size() && data_[swapI] > data_[childL]) {
+      swapI = childL;
+    }
+    
+    if (childR < data_.size() && data_[swapI] > data_[childR]) {
+      swapI = childR;
+    }
+    
+    if (swapI != i) {
+      swap(data_[i], data_[swapI]);
+      swaps_.push_back(make_pair(i, swapI));
+      SiftDown(swapI);
+    }
+  }
 
   void GenerateSwaps() {
     swaps_.clear();
-    // The following naive implementation just sorts 
-    // the given sequence using selection sort algorithm
-    // and saves the resulting sequence of swaps.
-    // This turns the given array into a heap, 
-    // but in the worst case gives a quadratic number of swaps.
-    //
-    // TODO: replace by a more efficient implementation
-    for (int i = 0; i < data_.size(); ++i)
-      for (int j = i + 1; j < data_.size(); ++j) {
-        if (data_[i] > data_[j]) {
-          swap(data_[i], data_[j]);
-          swaps_.push_back(make_pair(i, j));
-        }
-      }
+    int n = (data_.size() / 2) - 1;
+    for (int i = n; i >= 0; i--) {
+      SiftDown(i);
+    }
   }
 
  public:
