@@ -1,9 +1,12 @@
 #include <iostream>
 #include <vector>
 
-using std::vector;
-using std::swap;
+using cin;
+using cout;
+using vector;
+using swap;
 
+// Maintains the bounds of the <, =, and > partitions
 struct pt_limits {
   int j;
   int k;
@@ -12,12 +15,14 @@ struct pt_limits {
 pt_limits partition3(vector<int> &a, int l, int r) {
   int x = a[l];
   pt_limits m = {l, r};
-
+  
   for (int i = l + 1; i <= m.k; i++) {
     if (a[i] < x) {
+      // add element to < partition
       swap(a[i], a[m.j]);
       m.j++;
     } else if (a[i] > x) {
+      // add element to > partition
       swap(a[i], a[m.k]);
       m.k--;
       i--;
@@ -31,11 +36,15 @@ void randomized_quick_sort3(vector<int> &a, int l, int r) {
   if (l >= r) {
     return;
   }
-
+  
+  // Choose pivot
   int k = l + rand() % (r - l + 1);
   swap(a[l], a[k]);
+  
+  // Split into 3 partitions around the pivot (< > and =)
   pt_limits m = partition3(a, l, r);
-
+  
+  // Run quicksort on the < and > partitions
   randomized_quick_sort3(a, l, m.j - 1);
   randomized_quick_sort3(a, m.k + 1, r);
 }
@@ -58,15 +67,22 @@ void randomized_quick_sort2(vector<int> &a, int l, int r) {
   if (l >= r) {
     return;
   }
-
+  
+  // Choose pivot
   int k = l + rand() % (r - l + 1);
   swap(a[l], a[k]);
+  
+  // Break into 2 partitions around the pivot (<= and >)
   int m = partition2(a, l, r);
-
+  
+  // Run quicksort on the <= and > partitions
   randomized_quick_sort2(a, l, m - 1);
   randomized_quick_sort2(a, m + 1, r);
 }
 
+// Randomized stress test that validates integrity of improved solution for
+// performing QuickSort with 3 partitions against a reference solution for 
+// QuickSort with 2 partitions.
 void qs_stress()
 {
   while (true) {
@@ -87,29 +103,29 @@ void qs_stress()
 
     for (int i = 0; i < n; i++) {
       if (a[i] != b[i]) {
-        std::cout << "Original array: ";
+        cout << "Original array: ";
         for (int i = 0; i < n; ++i) {
-          std::cout << a[i] << " ";
+          cout << a[i] << " ";
         }
-        std::cout << "\n";
+        cout << "\n";
 
-        std::cout << "Wrong answer result: " << a[i] << ' ' << b[i] << "\n";
-        std::cout << "Wrong answer array: ";
+        cout << "Wrong answer result: " << a[i] << ' ' << b[i] << "\n";
+        cout << "Wrong answer array: ";
         for (int i = 0; i < n; ++i) {
-          std::cout << a[i] << " ";
+          cout << a[i] << " ";
         }
-        std::cout << "\n";
+        cout << "\n";
         for (int i = 0; i < n; ++i) {
-          std::cout << b[i] << " ";
+          cout << b[i] << " ";
         }
-        std::cout << "\n";
+        cout << "\n";
         success = false;
         break;
       }
     }
 
     if (success) {
-      std::cout << "OK!\n";
+      cout << "OK!\n";
     }
   }
 }
@@ -118,14 +134,14 @@ int main() {
   //qs_stress();
 
   int n;
-  std::cin >> n;
+  cin >> n;
   vector<int> a(n);
   for (size_t i = 0; i < a.size(); ++i) {
-    std::cin >> a[i];
+    cin >> a[i];
   }
   randomized_quick_sort3(a, 0, a.size() - 1);
   for (size_t i = 0; i < a.size(); ++i) {
-    std::cout << a[i] << ' ';
+    cout << a[i] << ' ';
   }
 
 }

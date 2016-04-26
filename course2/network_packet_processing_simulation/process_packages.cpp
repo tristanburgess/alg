@@ -34,21 +34,25 @@ public:
 
     Response Process(const Request &request) 
     {
-    	bool dropped = false;
-    	int start_time = 0;
+        bool dropped = false;
+        int start_time = 0;
         
-    	while (!finish_time_.empty() && request.arrival_time >= finish_time_.front()) {
-    		finish_time_.pop();
+        // For processing current request, we only consider packets
+        // that will not finish processing until after this request arrives.
+        while (!finish_time_.empty() && request.arrival_time >= finish_time_.front()) {
+            finish_time_.pop();
         }
-    	
-    	if (finish_time_.size() == size_) {
-    		dropped = true;
-    		start_time = -1;
-    	} else {
-    		start_time = finish_time_.empty() ? request.arrival_time : finish_time_.back();
-    		finish_time_.push(start_time + request.process_time);
-    	}
-    	
+        
+        // Packets are dropped if the buffer is full
+        if (finish_time_.size() == size_) {
+            dropped = true;
+            start_time = -1;
+        } else {
+            // Processing begins immediately after the last packet is processed
+            start_time = finish_time_.empty() ? request.arrival_time : finish_time_.back();
+            finish_time_.push(start_time + request.process_time);
+        }
+    
         return  *(new Response {dropped, start_time});
     }
 private:

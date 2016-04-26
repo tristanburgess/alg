@@ -5,12 +5,11 @@ using std::vector;
 
 long long merge_and_count(vector<int> &a, vector<int> &tmp, size_t left, size_t mid, size_t right)
 {
-  int i, j, k;
+  int i = left; // left subarr index
+  int j = mid; // right subarr index
+  int k = left; // tmp subarr index
+  
   long long inv_count = 0;
-
-  i = left; // left subarr index
-  j = mid; // right subarr index
-  k = left; // tmp subarr index
 
   while ((i < mid) && (j <= right))
   {
@@ -50,8 +49,12 @@ long long get_number_of_inversions(vector<int> &a, vector<int> &b, size_t left, 
   long long number_of_inversions = 0;
   if (right <= left) return number_of_inversions;
   size_t mid = (right + left) / 2;
+  
+  // Divide
   number_of_inversions += get_number_of_inversions(a, b, left, mid);
   number_of_inversions += get_number_of_inversions(a, b, mid+1, right);
+  
+  // Conquer
   number_of_inversions += merge_and_count(a, b, left, mid+1, right);
   return number_of_inversions;
 }
@@ -71,6 +74,7 @@ long long naive_get_number_of_inversions(vector<int> &a, int n)
  return inv_count;
 }
 
+// Verify integrity of new solution against naive solution
 void inversions_stress() {
   while (true) {
     int n = 50000;
