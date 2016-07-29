@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <random>
 
 using std::string;
 typedef unsigned long long ull;
@@ -16,56 +17,56 @@ Data read_input() {
 }
 
 void print_occurrences(const std::vector<int>& output) {
-    for (size_t i = 0; i < output.size(); ++i)
+    for (auto i = 0; i < output.size(); ++i)
         std::cout << output[i] << " ";
     std::cout << "\n";
 }
 
-size_t h(const string& s) const {
-    static const size_t multiplier = 263;
-    static const size_t p = 1000000007;
-    unsigned long long hash = 0;
-    for (int i = static_cast<int> (s.size()) - 1; i >= 0; --i)
-        hash = (hash * multiplier + s[i]) % p;
-    return hash % bucket_count;
+ull ph(const string& s, const ull p, const ull x) {
+    ull hash = 0;
+    for (auto i = static_cast<int> (s.size()) - 1; i >= 0; --i)
+        hash = (hash * x + s[i]) % p;
+    return hash;
+}
+
+std::vector<ull> precompute_hashes(const string& t, const string& s, const ull p, const ull x) {
+  std::vector<ull> hashes (t.size() - s.size() + 1);
+  string sub = t.substr(t.size() - s.size(), t.size());
+  hashes[t.size() - s.size()] = ph(sub, p, x);
+  
+  ull y = 1;
+  for (auto i = 1; i <= s.size(); ++i) {
+    y = (y * x) % p;
+  }
+  
+  for (auto j = static_cast<int> (t.size() - s.size() - 1); j >= 0; --j) {
+    hashes[j] = (((x * hashes[j + 1] + t[j]) - (y * t[j + s.size()] % p)) + p) % p;
+  }
+  
+  return hashes;
 }
 
 std::vector<int> get_occurrences(const Data& input) {
     const string& s = input.pattern, t = input.text;
+    static const ull p = 500007;
+    std::default_random_engine gen;
+    std::uniform_int_distribution<ull> dist(1, p - 1);
+    static const ull x = dist(gen);
     std::vector<int> ans;
+    ull pHash = ph(s, p, x);
+    std::vector<ull> hashes = precompute_hashes(t, s, p, x);
     
-    ull p = 100000001;
-    ull x = random(1, p-1);
-    
-    vector<hash> H = precompute_hashes(t, s.size(), p, x);
-    
-    for (int i = 0; i < t.size() - s.size(); ++i) {
-      if (h(s, p, x) != H[i]) {
+    for (auto i = 0; i + s.size() <= t.size(); ++i) {
+      if (pHash != hashes[i]) {
         continue;
       }
-      if (AreEqual(T[i...i+s.size()-1], s)) {
-        ans.append(i)
+      if (t.substr(i, s.size()) == s) {
+        ans.push_back(i);
       }
     }
     
     return ans;
 }
-
-vector<hash> precompute_hashes(string T, int pLen, p, x) {
-  vector<hash> hashes (T.size() - pLen + 1);
-  string S = T[T.size()-pLen...T.size()-1];
-  H[T.size()-pLen] = h(S, p, x);
-  y = 1;
-  for (int i = 1; i < plen; ++i) {
-    y = (y * x) % p;
-  }
-  for (int j = T.size() - pLen - 1; j >= 0; --j) {
-    H[j] = (x * H[j+i] + T[j] - y * T[i+pLen]) % p;
-  }
-  
-  return H;
-}
-
 
 int main() {
     std::ios_base::sync_with_stdio(false);
