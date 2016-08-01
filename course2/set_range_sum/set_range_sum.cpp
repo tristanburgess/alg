@@ -12,7 +12,7 @@ struct Vertex {
   Vertex* right;
   Vertex* parent;
 
-  Vertex(int key, long long sum, Vertex* left, Vertex* right, Vertex* parent) 
+  Vertex(long long key, long long sum, Vertex* left, Vertex* right, Vertex* parent) 
   : key(key), sum(sum), left(left), right(right), parent(parent) {}
 };
 
@@ -143,7 +143,6 @@ Vertex* merge(Vertex* left, Vertex* right) {
 }
 
 // Code that uses splay tree to solve the problem
-
 Vertex* root = NULL;
 
 void insert(int x) {
@@ -157,15 +156,77 @@ void insert(int x) {
   root = merge(merge(left, new_vertex), right);
 }
 
-void erase(int x) {                   
-  // Implement erase yourself
+Vertex* left_descendant(Vertex* x) {
+    if (x->left == NULL) {
+        return x;
+    }
+    
+    return left_descendant(x->left);
+}
 
+Vertex* right_ancestor(Vertex* x) {
+    if (x == NULL || x->parent == NULL) return NULL;
+    
+    if (x->key < x->parent->key) {
+        return x->parent;
+    }
+    
+    return right_ancestor(x->parent);
+}
+
+Vertex* next(Vertex* x) {
+    if (x->right != NULL) {
+        return left_descendant(x->right);
+    }
+    
+    return right_ancestor(x);
+}
+
+void replace(Vertex* x, Vertex* y) {
+    if (x->parent == NULL) {
+        root = y;
+    } else if (x == x->parent->left) {
+        x->parent->left = y;
+    } else {
+        x->parent->right = y;
+    }
+    
+    if (y != NULL) {
+        y->parent = x->parent;
+    }
 }
 
 bool find(int x) {  
-  // Implement find yourself
+  Vertex* n = find(root, x);
+  if (n == NULL) return false;
+  splay(root, n);
+  return n->key == x;
+}
 
-  return false;
+void erase(int x) {                   
+  Vertex* n = find(root, x);
+  if (n == NULL) return;
+  
+  splay(root, next(n));
+  splay(root, n);
+  
+  if (n->right == NULL) {
+      replace(n, n->left);
+  } else if (n->left == NULL) {
+      replace(n, n->right);
+  } else {
+      Vertex* min = left_descendant(n->right);
+      if (min->parent != n) {
+          replace(min, min->right);
+          min->right = n->right;
+          min->right->parent = min;
+      }
+      replace(n, min);
+      min->left = n->left;
+      min->left->parent = min;
+  }
+  
+  delete n;
 }
 
 long long sum(int from, int to) {
@@ -175,8 +236,8 @@ long long sum(int from, int to) {
   split(root, from, left, middle);
   split(middle, to + 1, middle, right);
   long long ans = 0;
-  // Complete the implementation of sum
-  
+  ans = middle != NULL ? middle->sum : 0ll;
+  root = merge(merge(left, middle), right);
   return ans;  
 }
 

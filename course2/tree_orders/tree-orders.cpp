@@ -24,28 +24,45 @@ public:
     }
   }
 
+  void traverse_in_order(vector<int>* result, int x) {
+    if (x == -1) return;
+      
+    traverse_in_order(result, left[x]);
+    result->push_back(key[x]);
+    traverse_in_order(result, right[x]);
+  }
+  
+  void traverse_pre_order(vector<int>* result, int x) {
+    if (x == -1) return;
+      
+    result->push_back(key[x]);
+    traverse_pre_order(result, left[x]);
+    traverse_pre_order(result, right[x]);
+  }
+  
+  void traverse_post_order(vector<int>* result, int x) {
+    if (x == -1) return;
+      
+    traverse_post_order(result, left[x]);
+    traverse_post_order(result, right[x]);
+    result->push_back(key[x]);
+  }
 
   vector <int> in_order() {
     vector<int> result;
-    // Finish the implementation
-    // You may need to add a new recursive method to do that
-
+    traverse_in_order(&result, 0);
     return result;
   }
 
   vector <int> pre_order() {
     vector<int> result;    
-    // Finish the implementation
-    // You may need to add a new recursive method to do that
-    
+    traverse_pre_order(&result, 0);
     return result;
   }
 
   vector <int> post_order() {
-    vector<int> result;
-    // Finish the implementation
-    // You may need to add a new recursive method to do that
-    
+    vector<int> result;  
+    traverse_post_order(&result, 0);
     return result;
   }
 };
