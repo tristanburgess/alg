@@ -1,8 +1,8 @@
 @echo off
 
 set CommonCompilerFlags=-O2 -EHa -Zi
-set dir=set_range_sum
-set file=set_range_sum
+set dir=rope
+set file=rope
 
 IF NOT EXIST %file% mkdir %file%
 pushd %file%
