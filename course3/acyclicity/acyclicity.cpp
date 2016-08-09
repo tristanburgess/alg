@@ -2,12 +2,41 @@
 #include <vector>
 
 using std::vector;
-using std::pair;
 
-int acyclic(vector<vector<int> > &adj) {
-  //write your code here
+int dfs_cycle_detected(vector<vector<int> > &adj, vector<bool> &visited, vector<bool> &cycleDetect, int x) {
+  if (!visited.at(x)) {
+    visited.at(x) = true;
+    cycleDetect.at(x) = true;
+    
+    for (auto it = adj.at(x).begin(); it != adj.at(x).end(); ++it) {
+      // propagate result
+      if (!visited.at(*it) && dfs_cycle_detected(adj, visited, cycleDetect, *it)) {
+          return 1;
+      } 
+      // Repeated vertex (found cycle)
+      else if (cycleDetect.at(*it)) {
+        return 1;
+      }
+    }
+  }
+  
+  // Cannot extend (found sink)
+  cycleDetect.at(x) = false;
   return 0;
 }
+
+int acyclic(vector<vector<int> > &adj) {
+  vector<bool> visited(adj.size());
+  vector<bool> cycleDetect(adj.size());
+  for (auto i = 0; i < adj.size(); ++i) {
+    if (dfs_cycle_detected(adj, visited, cycleDetect, i)) {
+      return 1;
+    }
+  }
+  
+  return 0;
+}
+
 
 int main() {
   size_t n, m;
