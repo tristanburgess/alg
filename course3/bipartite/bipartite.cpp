@@ -5,33 +5,40 @@
 using std::vector;
 using std::queue;
 
-int bfs(vector<vector<int> > &adj, int s, int t) {
+int bipartite(vector<vector<int> > &adj) {
   queue<int> q;
-  vector<int> distance(adj.size(), INT_MAX);
-  int cur = s;
+  
+  const int NONE = -1;
+  const int WHITE = 0;
+  const int BLACK = 1;
+  
+  vector<int> color(adj.size(), NONE);
+  
+  int cur = 0;
   q.push(cur);
-  distance.at(cur) = 0;
+  color.at(cur) = WHITE;
   
   while (!q.empty()) {
     cur = q.front();
     q.pop();
-    if (cur == t) return distance.at(t);
+    
+    int currentColor = color.at(cur);
     
     for (auto i : adj.at(cur)) {
-      if (distance.at(i) == INT_MAX) {
-        q.push(i);
-        distance.at(i) = distance.at(cur) + 1;
-      }
+        if (color.at(i) == currentColor) return 0;
+        if (color.at(i) == NONE) {
+            q.push(i);
+            if (currentColor == WHITE) {
+                color.at(i) = BLACK;
+            } else if (currentColor == BLACK) {
+                color.at(i) = WHITE;
+            }
+        }
     }
     
   }
   
-  return -1;
-}
-
-int bipartite(vector<vector<int> > &adj) {
-  //write your code here
-  return -1;
+  return 1;
 }
 
 int main() {
