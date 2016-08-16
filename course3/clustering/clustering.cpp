@@ -85,7 +85,7 @@ struct DSGraph {
 };
 
 double clustering(vector<int> x, vector<int> y, int k) {
-  double result = -1.;
+  double result = 0;
   int n = x.size();
   DSGraph g;
   
